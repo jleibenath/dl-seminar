@@ -40,10 +40,10 @@ def get_seq_datasets(dataset="Staphylococcus_aureus_cefoxitin_pbp4"):
 
     print(len(y_train) - sum(y_train))
 
-    seq_train, y_train = ros_resample(seq_train, y_train)
+    # seq_train, y_train = ros_resample(seq_train, y_train)
     print(len(seq_train))
-    print(y_train)
-    print(len(y_train) - sum(y_train))
+    # print(y_train)
+    # print(len(y_train) - sum(y_train))
 
     train = TensorDataset(torch.tensor(seq_train), torch.tensor(y_train))
     test = TensorDataset(torch.tensor(seq_test), torch.tensor(y_test))

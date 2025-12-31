@@ -1,8 +1,9 @@
-import torch
+from torch.utils.data import Subset
 import torch.nn as nn
 import torch.optim as optim
 from load_data import *
 from SimpleNet import SimpleNet
+from sklearn.model_selection import StratifiedKFold
 
 
 def train_model(model, device, criterion, optimizer, train_loader, num_epochs=30):
@@ -17,7 +18,7 @@ def train_model(model, device, criterion, optimizer, train_loader, num_epochs=30
             loss.backward()
             optimizer.step()
             running_loss += loss.item() * X_batch.size(0)
-        print(f"Epoche {epoch + 1}/{num_epochs}, Verlust: {running_loss / len(train_loader.dataset):.4f}")
+        print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {running_loss / len(train_loader.dataset):.4f}")
 
 
 def test_model(model, device, test_loader):
@@ -30,17 +31,47 @@ def test_model(model, device, test_loader):
             _, predicted = torch.max(outputs, 1)
             total += y_batch.size(0)
             correct += (predicted == y_batch).sum().item()
-    # add confusion matrix
-    print(f"Testgenauigkeit: {100 * correct / total:.2f}%")
+    # TODO: add confusion matrix
+    accuracy = 100 * correct / total
+    print(f"Test accuracy: {accuracy:.2f}%\n")
+    return accuracy
 
 
-if __name__ == "__main__":
+def train_and_eval():
     train_loader, test_loader = get_dataloader()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = SimpleNet().to(device)
-    weights = torch.tensor([661/139, 1.0], device=device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.005)
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    train_model(model, device, criterion, optimizer, train_loader)
+    train_model(model, device, criterion, optimizer, train_loader, 50)
     test_model(model, device, test_loader)
+
+
+def val_train_and_eval(folds=1):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    criterion = nn.CrossEntropyLoss()
+    train_set, test_set = get_seq_datasets()
+    train_data, train_targets = train_set.tensors
+    results = []
+    kfold = StratifiedKFold(n_splits=folds, shuffle=True)
+    for fold, (train_ids, val_ids) in enumerate(kfold.split(train_data, train_targets)):
+
+        train_sub = Subset(train_set, train_ids)
+        val_sub = Subset(train_set, val_ids)
+
+        train_loader = DataLoader(train_sub, batch_size=32, shuffle=True)
+        val_loader = DataLoader(val_sub, batch_size=32, shuffle=False)
+
+        model = SimpleNet().to(device)
+        optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+        train_model(model, device, criterion, optimizer, train_loader)
+        results.append(test_model(model, device, val_loader))
+    print(results)
+    print(f"Average: {sum(results) / len(results)}")
+
+
+if __name__ == "__main__":
+    # val_train_and_eval(5)
+    train_and_eval()
