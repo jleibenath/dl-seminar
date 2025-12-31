@@ -39,9 +39,10 @@ def get_seq_datasets(dataset="Staphylococcus_aureus_cefoxitin_pbp4"):
     seq_train = seq_to_one_hot(seq_train)
 
     print(len(y_train) - sum(y_train))
+    print(len(seq_train))
 
     # seq_train, y_train = ros_resample(seq_train, y_train)
-    print(len(seq_train))
+    #print(len(seq_train))
     # print(y_train)
     # print(len(y_train) - sum(y_train))
 

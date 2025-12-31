@@ -42,9 +42,9 @@ def train_and_eval():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = SimpleNet().to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=0.005)
 
-    train_model(model, device, criterion, optimizer, train_loader, 50)
+    train_model(model, device, criterion, optimizer, train_loader)
     test_model(model, device, test_loader)
 
 
