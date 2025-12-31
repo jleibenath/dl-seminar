@@ -5,7 +5,7 @@ from load_data import *
 from SimpleNet import SimpleNet
 
 
-def train_model(model, device, criterion, optimizer, train_loader, num_epochs=10):
+def train_model(model, device, criterion, optimizer, train_loader, num_epochs=30):
     for epoch in range(num_epochs):
         model.train()
         running_loss = 0.0
@@ -30,6 +30,7 @@ def test_model(model, device, test_loader):
             _, predicted = torch.max(outputs, 1)
             total += y_batch.size(0)
             correct += (predicted == y_batch).sum().item()
+    # add confusion matrix
     print(f"Testgenauigkeit: {100 * correct / total:.2f}%")
 
 
