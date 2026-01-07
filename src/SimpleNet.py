@@ -7,13 +7,7 @@ class SimpleNet(nn.Module):
     def __init__(self):
         super().__init__()
         self.classifier = nn.Sequential(
-            nn.Linear(5184, 30),
-            nn.ReLU(),
-            nn.Dropout(DROPOUT),
-            nn.Linear(30, 20),
-            nn.ReLU(),
-            nn.Dropout(DROPOUT),
-            nn.Linear(20, 20),
+            nn.Linear(5184, 20),
             nn.ReLU(),
             nn.Dropout(DROPOUT),
             nn.Linear(20, 10),
@@ -21,7 +15,7 @@ class SimpleNet(nn.Module):
             nn.Dropout(DROPOUT),
             nn.Linear(10, 10),
             nn.ReLU(),
-            nn.Linear(10, 2)
+            nn.Linear(10, 2),
         )
 
     def forward(self, x):

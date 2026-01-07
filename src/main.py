@@ -39,14 +39,13 @@ def test_model(model, device, test_loader):
             pred_ones += predicted.sum()
             total += y_batch.size(0)
             correct += (predicted == y_batch).sum().item()
-    # TODO: add confusion matrix
     accuracy = 100 * correct / total
     print(f"predicted {pred_ones} 1s")
     print(f"Test accuracy: {accuracy:.2f}%\n")
     return accuracy
 
 
-def train_and_eval(runs=1, plot=False):
+def train_and_eval(runs=1, plot=False, path=None):
     train_loader, test_loader = get_dataloader()
     device = "cpu" # torch.device("cuda" if torch.cuda.is_available() else "cpu")
     weights = torch.tensor([1.0, 179/621]).to(device)
@@ -60,6 +59,8 @@ def train_and_eval(runs=1, plot=False):
         losses = train_model(model, device, criterion, optimizer, train_loader)
         plt.plot(losses)
         running_acc += test_model(model, device, test_loader)
+        if path:
+            torch.save(model.state_dict(), path)
     if plot:
         plt.xlabel("Epochs")
         plt.ylabel("Loss")
@@ -96,4 +97,4 @@ def val_train_and_eval(folds=1):
 if __name__ == "__main__":
     # val_train_and_eval(5)
     # train_and_eval()
-    print(f"avg. accuracy: {train_and_eval(10, True)}")
+    print(f"avg. accuracy: {train_and_eval(1, True, 'src/model_weights.pth')}")
