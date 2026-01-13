@@ -12,9 +12,6 @@ class SimpleNet(nn.Module):
             nn.Dropout(DROPOUT),
             nn.Linear(20, 10),
             nn.ReLU(),
-            nn.Dropout(DROPOUT),
-            nn.Linear(10, 10),
-            nn.ReLU(),
             nn.Linear(10, 2),
         )
 
